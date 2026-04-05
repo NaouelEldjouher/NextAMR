@@ -1,0 +1,26 @@
+# Nextflow temporary files & logs
+nextflow/work/
+nextflow/.nextflow/
+.nextflow/
+.nextflow.log*
+*.html
+*.html.*
+
+# Python virtual environment and cache
+venv/
+__pycache__/
+*.pyc
+
+# Data & Results (Don't upload heavy genomic data)
+nextflow/results/
+nextflow/databases/
+*.fastq
+*.fastq.gz
+*.fasta
+*.fna
+*.tsv
+
+# AWS Security & Keys (CRITICAL)
+*.pem
+.aws/
+credentials
