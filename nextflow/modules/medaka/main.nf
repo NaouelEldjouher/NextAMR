@@ -13,8 +13,7 @@ process MEDAKA {
     script:
     def prefix = "${meta.id}"
     """
-    # FIX: Point the home directory to the current Nextflow work folder 
-    # so Medaka has permission to download and save the missing model.
+    
     export HOME=\$(pwd)
 
     medaka_consensus -i $longreads -d $assembly -o ./ -t $task.cpus -m r1041_e82_400bps_sup_v4.2.0

@@ -3,7 +3,7 @@ process FILTLONG {
     container 'staphb/filtlong:0.2.1'
 
     input:
-    // Tuple now expects meta, short_reads, and long_reads
+    
     tuple val(meta), path(shortreads), path(longreads)
 
     output:
@@ -12,11 +12,11 @@ process FILTLONG {
 
     script:
     def prefix = "${meta.id}"
-    // FIX: Change 'reads' to 'shortreads' so it matches your input block!
+   
     def short_args = shortreads ? "-1 ${shortreads[0]} -2 ${shortreads[1]}" : ""
     
     """
-    # -1 and -2 use the accurate short reads to score the long reads
+    
     filtlong \\
         $short_args \\
         --min_length 500 \\

@@ -5,7 +5,7 @@ process POLYPOLISH {
     publishDir "${params.outdir}/polypolish", mode: 'copy', pattern: '*.fasta'
 
     input:
-    // It now expects the Assembly and the SAM files outputted by BWA
+    
     tuple val(meta), path(assembly), path(sams)
 
     output:
@@ -14,7 +14,7 @@ process POLYPOLISH {
 
     script:
     """
-    # ADDED 'polish': The new version requires the 'polish' subcommand
+   
     polypolish polish $assembly ${sams[0]} ${sams[1]} > ${meta.id}_polypolish.fasta
 
     cat <<-END_VERSIONS > versions.yml

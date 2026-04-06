@@ -48,7 +48,7 @@ workflow {
         }
 
     // --- 3. DYNAMIC BRANCHING ---
-    // Updated to handle 'longread' type from your TSV
+    
     ch_input.branch {
         hybrid:   it[0].type == 'hybrid'
         illumina: it[0].type == 'illumina'
@@ -70,7 +70,7 @@ workflow {
     UNICYCLER_ILL ( ch_unicycler_ill_input )
     DNAAPLER_ILL ( UNICYCLER_ILL.out.scaf )
 
-    // --- 6. NEW LANE C: LONG-READ ONLY WORKFLOW ---
+    // --- 6. LANE C: LONG-READ ONLY WORKFLOW ---
     // 6a. Filter Long Reads (no short-read reference needed)
     FILT_LR ( ch_data.longread.map { meta, reads, lr -> [ meta, [], lr ] } )
     

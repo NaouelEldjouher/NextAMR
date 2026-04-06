@@ -8,13 +8,13 @@ process PYPOLCA {
     tuple val(meta), path(assembly), path(reads)
 
     output:
-    // Nextflow expects this exact filename
+
     tuple val(meta), path("${meta.id}_pypolca.fasta"), emit: assembly
     path "versions.yml"                              , emit: versions
 
     script:
     """
-    # Force PyPoliCa to output to a dedicated folder named 'pypolca_out'
+    
     pypolca run \\
         -a $assembly \\
         -1 ${reads[0]} \\

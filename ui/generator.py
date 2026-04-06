@@ -49,7 +49,7 @@ def render_generator():
             save_path = "samples_generated.tsv"
             df.to_csv(save_path, sep='\t', index=False)
             
-            # Update session state for the Validator
+           
             st.session_state['generated_file'] = save_path
             st.success(f"✅ Success! `{save_path}` is ready. Move to Tab 2.")
             

@@ -15,8 +15,7 @@ process AMRFINDERPLUS {
     script:
     def prefix = "${meta.id}"
     """
-    # -n specifies nucleotide input (your .fasta assembly)
-    # --plus adds additional point mutations and stress response genes
+    
     amrfinder \\
         -n $fasta \\
         --threads $task.cpus \\

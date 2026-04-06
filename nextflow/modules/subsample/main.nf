@@ -2,7 +2,7 @@ process SUBSAMPLE {
     tag "$meta.id"
     container 'quay.io/biocontainers/seqtk:1.4--he4a0461_2'
     
-    // 1. Add the PublishDir to save the downsampled reads
+   
     publishDir "${params.outdir}/subsampled", mode: 'copy', pattern: "*.sub.fastq.gz"
 
     input:
@@ -13,7 +13,7 @@ process SUBSAMPLE {
 
     script:
     def prefix = "${meta.id}"
-    // 2. Check if we have a pair [R1, R2] or a single file
+    
     if (reads instanceof List && reads.size() == 2) {
         """
         # Process Paired-End: 5M reads from R1 and 5M from R2
