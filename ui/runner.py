@@ -3,7 +3,7 @@ import subprocess
 import os
 
 def render_runner():
-    st.header("🚀 3. Cloud Pipeline Launcher")
+    st.header("🚀 3. Pipeline Launcher")
     
     # 1. State Verification
     if 'validated_file' not in st.session_state or not st.session_state['validated_file']:
@@ -13,42 +13,35 @@ def render_runner():
     input_tsv = st.session_state['validated_file']
     st.success(f"📂 Sample Sheet Ready: `{input_tsv}`")
 
-    # 2. Cloud-Specific User Inputs
-    st.markdown("### AWS Configuration")
-    col1, col2 = st.columns(2)
+    # 2. Local Configuration
+    st.markdown("### Execution Configuration")
     
-    with col1:
-        # The 'Work' bucket is where Nextflow stores intermediate 'trash' files
-        s3_bucket = st.text_input("AWS S3 Work Bucket", "s3://my-amr-flow-data/work")
-    with col2:
-        # The 'Results' path is where the final tables and fastas go
-        s3_out = st.text_input("AWS S3 Output Path", "s3://my-amr-flow-data/results")
+    # Let the user choose a folder name for the results
+    out_dir = st.text_input("Output Directory Name", "results")
 
     # RESUME FEATURE
     use_cache = st.checkbox("Use Nextflow Cache (-resume)", value=True, 
                             help="Turn this off if you want a completely fresh run.")
 
     # 3. The Launch Button
-    if st.button("🔥 Launch AWS Batch Pipeline"):
+    if st.button("🔥 Launch Pipeline"):
         
-        # Automatic Path Detection
-        current_dir = os.path.basename(os.getcwd())
-        nf_script = "../nextflow/main.nf" if current_dir == "ui" else "nextflow/main.nf"
+        # We assume main.nf is in your root AMR-Flow folder
+        nf_script = "main.nf" 
         
-        # 4. Build Command for Cloud Execution
-        # We use -profile aws to trigger the AWS Batch executor defined in nextflow.config
+        # 4. Build Command for Local EC2 Execution
+        # We use -profile docker to run it right there on your AWS server
         cmd = [
             "nextflow", "run", nf_script,
-            "-profile", "aws", 
-            "-bucket-dir", s3_bucket,
+            "-profile", "docker", 
             "--input", input_tsv,
-            "--outdir", s3_out
+            "--outdir", out_dir
         ]
 
         if use_cache:
             cmd.append("-resume")
 
-        st.info(f"⚡ Dispatching tasks to AWS Batch...")
+        st.info(f"⚡ Dispatching tasks to the local Docker engine...")
         
         # 5. Execution and Real-time Log Streaming
         log_placeholder = st.empty()
@@ -72,10 +65,10 @@ def render_runner():
             
             if process.returncode == 0:
                 st.balloons()
-                st.success("✅ Pipeline Finished! Results are safe in your S3 bucket.")
+                st.success(f"✅ Pipeline Finished! Your reports are saved in the `{out_dir}` folder on the server.")
                 st.session_state['tsv_ready'] = False 
             else:
-                st.error(f"❌ Cloud Execution Failed (Code: {process.returncode})")
+                st.error(f"❌ Execution Failed (Code: {process.returncode})")
                 
         except Exception as e:
-            st.error(f"Critical Cloud Error: {e}")
+            st.error(f"Critical Pipeline Error: {e}")

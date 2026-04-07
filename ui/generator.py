@@ -1,55 +1,55 @@
 import streamlit as st
 import pandas as pd
+import boto3
 import os
 
+# Initialize AWS S3 Client
+s3_client = boto3.client('s3')
+
 def render_generator():
-    st.header("📝 1. Sample Sheet Generator")
-    st.write("Manually enter your sample IDs and their corresponding S3 paths.")
+    st.header("☁️ 1. Enterprise Cloud Upload")
+    st.write("Upload your Sample Sheet and FastQ files. We will securely transfer them to your AWS S3 bucket for cloud processing.")
 
-    # Use session state to keep the list alive between tab clicks
-    if 'temp_samples' not in st.session_state:
-        st.session_state['temp_samples'] = []
+    # Ask the user (or yourself) where these files should go in AWS
+    target_bucket = st.text_input("Destination S3 Bucket Name", "my-amr-flow-data")
+    target_folder = st.text_input("S3 Folder Path (Optional)", "uploads/test-run-1")
 
-    # Form for adding a single sample
-    with st.form("add_sample_form", clear_on_submit=True):
-        c1, c2 = st.columns(2)
-        with c1:
-            sample_id = st.text_input("Sample ID", placeholder="e.g., E_COLI_001")
-            f1 = st.text_input("Fastq 1 (S3 URI)", placeholder="s3://bucket/path/R1.fastq.gz")
-        with c2:
-            f2 = st.text_input("Fastq 2 (S3 URI)", placeholder="s3://bucket/path/R2.fastq.gz")
-            long = st.text_input("Long Reads (S3 URI)", value="none")
-        
-        submitted = st.form_submit_button("➕ Add Sample")
-        if submitted:
-            if sample_id and f1:
-                st.session_state['temp_samples'].append({
-                    "sample": sample_id,
-                    "fastq_1": f1,
-                    "fastq_2": f2 if f2 else "none",
-                    "longreads": long if long else "none"
-                })
-                st.toast(f"Added {sample_id}")
-            else:
-                st.error("Sample ID and Fastq 1 are required.")
+    # The File Uploaders
+    tsv_file = st.file_uploader("1. Upload Sample Sheet (.tsv)", type=["tsv", "txt"])
+    fastq_files = st.file_uploader("2. Upload all FastQ files", type=['fastq', 'fastq.gz', 'fq', 'fq.gz'], accept_multiple_files=True)
 
-    # Display the current list and provide a save button
-    if st.session_state['temp_samples']:
-        df = pd.DataFrame(st.session_state['temp_samples'])
-        st.write("### Current Selection")
+    if tsv_file and fastq_files and target_bucket:
+        df = pd.read_csv(tsv_file, sep='\t')
+        st.write("### 🔍 Preview of Original Sample Sheet")
         st.dataframe(df, width='stretch')
 
-        col1, col2 = st.columns([1, 4])
-        if col1.button("🗑️ Clear List"):
-            st.session_state['temp_samples'] = []
-            st.rerun()
-            
-        if col2.button("💾 Finalize & Save for Validation"):
-            # Save the TSV locally so Tab 2 can find it
-            save_path = "samples_generated.tsv"
-            df.to_csv(save_path, sep='\t', index=False)
-            
-           
-            st.session_state['generated_file'] = save_path
-            st.success(f"✅ Success! `{save_path}` is ready. Move to Tab 2.")
-            
+        if st.button("🚀 Upload Directly to S3 & Finalize"):
+            with st.spinner("Streaming files to AWS S3... this may take a while for large datasets."):
+                
+                uploaded_paths = {}
+                
+                # 1. Upload each FastQ file straight to S3
+                for fq in fastq_files:
+                    # Construct the S3 Key (the path inside the bucket)
+                    s3_key = f"{target_folder}/{fq.name}".strip("/")
+                    s3_uri = f"s3://{target_bucket}/{s3_key}"
+                    
+                    try:
+                        # Upload the file stream directly to S3
+                        s3_client.upload_fileobj(fq, target_bucket, s3_key)
+                        uploaded_paths[fq.name] = s3_uri
+                    except Exception as e:
+                        st.error(f"Failed to upload {fq.name}: {e}")
+                        return
+
+                # 2. Update the TSV DataFrame with the new S3 URIs
+                for col in ['fastq_1', 'fastq_2', 'longreads']:
+                    if col in df.columns:
+                        df[col] = df[col].apply(lambda x: uploaded_paths.get(str(x).strip(), x) if pd.notnull(x) else x)
+
+                # 3. Save the final TSV locally for Nextflow to read
+                final_tsv_path = os.path.join(os.getcwd(), "samples_cloud_ready.tsv")
+                df.to_csv(final_tsv_path, sep='\t', index=False)
+                
+                st.session_state['generated_file'] = final_tsv_path
+                st.success(f"✅ Success! {len(fastq_files)} files pushed to S3. The Sample Sheet now contains s3:// links.")
