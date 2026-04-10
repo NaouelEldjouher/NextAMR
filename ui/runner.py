@@ -23,8 +23,8 @@ def render_runner():
         # The command now uses -profile aws to trigger the cloud cluster
         cmd = [
             "nextflow", "run", "main.nf",
-            "-profile", "aws", 
-            "-bucket-dir", s3_bucket,
+            "-profile", "aws", # Triggers the Cloud Profile
+            "-bucket-dir", s3_bucket, # Defines the S3 Working Directory
             "--input", input_tsv,
             "--outdir", s3_out,
             "-resume"
