@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import boto3
 from botocore.exceptions import ClientError
-# AMR-Flow Cloud Validator - v1.0.0
+# AMR-Flow: Cloud Data Integrity Validator
 # Verified for HeadNode IAM Role integration
 def check_s3_file(s3_client, bucket, key):
     try:
