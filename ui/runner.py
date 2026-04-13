@@ -1,3 +1,10 @@
+"""
+AMR-Flow: Cloud Orchestrator
+This module bridges the Streamlit frontend with the Nextflow backend. 
+By utilizing Python's subprocess module, it asynchronously dispatches 
+genomic tasks to the AWS Batch cluster via the '-profile aws' flag, 
+ensuring the UI remains highly responsive during heavy compute loads.
+"""
 import streamlit as st
 import subprocess
 import os
@@ -46,3 +53,6 @@ def render_runner():
                 st.success("✅ Pipeline Finished! Check your S3 Results path.")
         except Exception as e:
             st.error(f"Execution Error: {e}")
+
+
+
