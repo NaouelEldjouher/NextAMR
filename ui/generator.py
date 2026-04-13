@@ -1,7 +1,14 @@
+"""
+AMR-Flow: Secure Data Ingestion Module
+This module handles the front-end user uploads. It utilizes Boto3's 
+upload_fileobj to stream large genomic FastQ files directly to AWS S3. 
+This ensures the Streamlit UI remains stateless, scalable, and memory-efficient.
+"""
 import streamlit as st
 import pandas as pd
 import boto3
 import os
+
 # AMR-Flow: Secure Data Ingestion Module
 # Initialize AWS S3 Client
 s3_client = boto3.client('s3')
