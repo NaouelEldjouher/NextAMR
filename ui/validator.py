@@ -1,3 +1,9 @@
+"""
+AMR-Flow: Cloud Data Integrity Validator
+This module acts as a 'Pre-Flight Guardrail'. By using boto3 to verify 
+S3 object existence before triggering AWS Batch, it prevents 'zombie jobs' 
+and significantly reduces wasted cloud compute costs caused by missing data.
+"""
 import streamlit as st
 import pandas as pd
 import os
