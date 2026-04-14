@@ -34,6 +34,7 @@ include { DNAAPLER as DNAAPLER_LR }    from './modules/dnaapler'
 workflow {
     
     // --- 2. INPUT CHANNEL ---
+    // Standardizing input for multi-modal analysis
     ch_input = Channel.fromPath(params.input)
         .splitCsv(header:true, sep: (params.input.endsWith('.tsv') ? '\t' : ',')) 
         .map { row -> 
