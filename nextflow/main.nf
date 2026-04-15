@@ -49,7 +49,7 @@ workflow {
         }
 
     // --- 3. DYNAMIC BRANCHING ---
-    
+    // Implementing autonomous routing logic
     ch_input.branch {
         hybrid:   it[0].type == 'hybrid'
         illumina: it[0].type == 'illumina'
