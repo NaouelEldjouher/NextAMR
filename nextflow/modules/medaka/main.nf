@@ -1,7 +1,7 @@
 process MEDAKA {
     tag "$meta.id"
     
-    container 'quay.io/biocontainers/medaka:1.11.3--py39h05d5c5e_0'
+    
 
     input:
     tuple val(meta), path(assembly), path(longreads)
@@ -18,7 +18,7 @@ process MEDAKA {
 
     medaka_consensus -i $longreads -d $assembly -o ./ -t $task.cpus -m r1041_e82_400bps_sup_v4.2.0
     
-    # Rename output
+ 
     mv consensus.fasta ${prefix}.polished.fasta
 
     cat <<-END_VERSIONS > versions.yml
