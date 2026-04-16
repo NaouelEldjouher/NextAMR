@@ -1,6 +1,6 @@
 process BWA_MEM {
     tag "$meta.id"
-    container 'staphb/bwa:0.7.17'
+
 
     input:
     tuple val(meta), path(assembly), path(reads)

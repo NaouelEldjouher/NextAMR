@@ -1,7 +1,6 @@
 process BAKTA {
     tag "$meta.id"
-    label 'process_medium'
-    container 'staphb/bakta:1.9.4'
+
 
     input:
     tuple val(meta), path(assembly)

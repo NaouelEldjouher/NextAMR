@@ -1,6 +1,6 @@
 process SUBSAMPLE {
     tag "$meta.id"
-    container 'quay.io/biocontainers/seqtk:1.4--he4a0461_2'
+
     
    
     publishDir "${params.outdir}/subsampled", mode: 'copy', pattern: "*.sub.fastq.gz"

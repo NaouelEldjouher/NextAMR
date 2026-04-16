@@ -1,6 +1,6 @@
 process POLYPOLISH {
     tag "$meta.id"
-    container 'staphb/polypolish:0.6.0'
+
 
     publishDir "${params.outdir}/polypolish", mode: 'copy', pattern: '*.fasta'
 

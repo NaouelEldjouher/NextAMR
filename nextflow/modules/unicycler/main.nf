@@ -1,6 +1,6 @@
 process UNICYCLER {
     tag "$meta.id"
-    container 'staphb/unicycler:0.5.0'
+    
     
    
     publishDir "${params.outdir}/unicycler", mode: 'copy'
@@ -26,7 +26,7 @@ process UNICYCLER {
         rm -rf unicycler_output
 
         unicycler \\
-            -1 ${shortreads[0]} \\
+            -1 ${shortreads[0]} \\E
             -2 ${shortreads[1]} \\
             $long_reads_arg \\
             -o unicycler_output \\

@@ -1,6 +1,6 @@
 process FILTLONG {
     tag "$meta.id"
-    container 'staphb/filtlong:0.2.1'
+  
 
     input:
     

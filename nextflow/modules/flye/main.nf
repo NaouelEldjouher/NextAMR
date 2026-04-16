@@ -2,7 +2,7 @@ process FLYE {
     tag "$meta.id"
     
 
-    container 'staphb/flye:2.9.3'
+
 
 
     publishDir "${params.outdir}/flye", mode: 'copy', pattern: '*.fasta'

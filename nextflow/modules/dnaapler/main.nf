@@ -1,6 +1,6 @@
 process DNAAPLER {
     tag "$meta.id"
-    container 'staphb/dnaapler:0.7.0'
+   
 
     publishDir "${params.outdir}/dnaapler", mode: 'copy', pattern: '*.fasta'
 

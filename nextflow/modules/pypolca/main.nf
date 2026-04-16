@@ -1,6 +1,6 @@
 process PYPOLCA {
     tag "$meta.id"
-    container 'staphb/pypolca:0.3.1'
+   
 
     publishDir "${params.outdir}/pypolca", mode: 'copy', pattern: '*.fasta'
 

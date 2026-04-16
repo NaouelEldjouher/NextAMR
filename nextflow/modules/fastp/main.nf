@@ -1,6 +1,5 @@
 process FASTP {
     tag "$meta.id"
-    container 'biocontainers/fastp:0.23.4--h5f7e573_0'
 
     publishDir "${params.outdir}/fastp", mode: 'copy', pattern: '*.{html,json,fastq.gz}'
     input:
