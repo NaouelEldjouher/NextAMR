@@ -1,6 +1,6 @@
 process AMRFINDERPLUS {
     tag "$meta.id"
-    container 'staphb/ncbi-amrfinderplus:latest'
+   
 
     // 1. Add PublishDir to save the AMR resistance reports
     publishDir "${params.outdir}/amrfinderplus", mode: 'copy'
