@@ -3,7 +3,7 @@ AMR-Flow: Cloud Orchestrator
 This module bridges the Streamlit frontend with the Nextflow backend. 
 By utilizing Python's subprocess module, it asynchronously dispatches 
 genomic tasks to the AWS Batch cluster via the '-profile aws' flag, 
-ensuring the UI remains highly responsive during heavy compute loads.
+ensuring the UI remains highly responsive during heavy compute loads.E
 """
 import streamlit as st
 import subprocess
@@ -22,15 +22,18 @@ def render_runner():
     col1, col2 = st.columns(2)
     with col1:
         # This is where Nextflow keeps its intermediate cloud 'trash'
-        s3_bucket = st.text_input("S3 Work Bucket (Required for Batch)", "s3://your-bucket/work")
+        s3_bucket = os.getenv("AMR_WORK_BUCKET", "s3://default-bucket/work")
     with col2:
-        s3_out = st.text_input("S3 Output Results Path", "s3://your-bucket/results")
+        s3_out = os.getenv("AMR_RESULTS_BUCKET", "s3://default-bucket/results")
 
     if st.button("🔥 Launch AWS Batch Pipeline"):
         # The command now uses -profile aws to trigger the cloud cluster
+        nextflow_bin = os.path.expanduser("~/bin/nextflow")
+        main_nf_path = os.path.abspath("nextflow/main.nf")
         cmd = [
-            "nextflow", "run", "main.nf",
+            nextflow_bin, "run", main_nf_path,
             "-profile", "aws", # Triggers the Cloud Profile
+            "-preview",
             "-bucket-dir", s3_bucket, # Defines the S3 Working Directory
             "--input", input_tsv,
             "--outdir", s3_out,
