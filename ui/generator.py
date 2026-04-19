@@ -17,9 +17,9 @@ def render_generator():
     st.header("☁️ 1. Enterprise Cloud Upload")
     st.write("Upload your Sample Sheet and FastQ files. We will securely transfer them to your AWS S3 bucket for cloud processing.")
 
-    # Ask the user (or yourself) where these files should go in AWS
-    target_bucket = st.text_input("Destination S3 Bucket Name", "my-amr-flow-data")
-    target_folder = st.text_input("S3 Folder Path (Optional)", "uploads/test-run-1")
+   
+    target_bucket = os.getenv("AMR_S3_BUCKET", "amr-flow-system-data-485988342847-us-east-1-an")
+    target_folder = os.getenv("AMR_S3_FOLDER", "uploads")
 
     # The File Uploaders
     tsv_file = st.file_uploader("1. Upload Sample Sheet (.tsv)", type=["tsv", "txt"])
