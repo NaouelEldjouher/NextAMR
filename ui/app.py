@@ -1,7 +1,6 @@
 import streamlit as st
 import boto3
-import generator, validator, runner
-
+import generator, validator, runner, reporter
 st.set_page_config(page_title="AMR-Flow Cloud", layout="wide")
 st.title("🧬 AMR-Flow: Cloud Controller")
 
@@ -19,10 +18,12 @@ tabs = st.tabs([
     "1. Upload Data", 
     "2. Validate Sheet", 
     "3. Launch Pipeline", 
-    "4. Monitor Logs"
+    "4. Monitor Logs",
+    "5. Results Dashboard"
 ])
 
 with tabs[0]: generator.render_generator()
 with tabs[1]: validator.render_validator()
 with tabs[2]: runner.render_runner()
 with tabs[3]: st.info("Check AWS Batch/EC2 Console for live node scaling.")
+with tabs[4]: reporter.render_reporter()

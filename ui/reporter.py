@@ -1,28 +1,40 @@
 import streamlit as st
 import pandas as pd
+import boto3
 import os
 import glob
 import json
-
+# Initialize S3 Client
+s3 = boto3.client('s3')
 def render_reporter():
     st.header("📊 AMR-Flow Analysis Dashboard")
-    res_dir = "nextflow/results"
-    
-    if not os.path.exists(res_dir):
-        st.error(f"❌ Results folder not found at `{res_dir}`.")
-        return
+    bucket_name = "amr-flow-system-data-485988342847-us-east-1-an"
+    res_prefix = "results/"
+
+    def list_s3_files(prefix):
+        """Helper to list objects in S3 with a specific prefix"""
+        try:
+            response = s3.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+            return [obj['Key'] for obj in response.get('Contents', [])]
+        except Exception:
+            return []
+
+    def get_s3_file_content(key):
+        """Helper to read S3 object content into string"""
+        obj = s3.get_object(Bucket=bucket_name, Key=key)
+        return obj['Body'].read().decode('utf-8')
 
     # --- SECTION 1: RAW READ QUALITY (FASTP) ---
     st.subheader("🧬 1. Raw Read Metrics")
-    fastp_files = glob.glob(os.path.join(res_dir, "fastp", "*.json"))
+    fastp_keys= [k for k in list_s3_files(f"{res_prefix}fastp/") if k.endswith(".json")]
     
-    if fastp_files:
+    if fastp_keys:
         qc_stats = []
-        for f in fastp_files:
+        for f in fastp_keys:
             sample = os.path.basename(f).replace(".json", "")
             try:
                 with open(f, 'r') as j:
-                    data = json.load(j).get('summary', {}).get('after_filtering', {})
+                    data = json.loads(get_s3_file_content(key)).get('summary', {}).get('after_filtering', {})
                     total_bases = data.get('total_bases', data.get('total_bp', 0))
                     qc_stats.append({
                         "Sample": sample,
@@ -39,52 +51,64 @@ def render_reporter():
     # --- SECTION 2: ASSEMBLY QUALITY (DIRECT FASTA SCAN) ---
     st.divider()
     st.subheader("🏗️ 2. Assembly Quality (N50 & GC)")
+    
     # Scans all fasta/fna files found in the results tree
-    fasta_files = glob.glob(os.path.join(res_dir, "**", "*.fna"), recursive=True) + \
-                  glob.glob(os.path.join(res_dir, "**", "*.fasta"), recursive=True)
+    all_files = list_s3_files(res_prefix)
+    fasta_keys = [k for k in all_files if k.endswith((".fna", ".fasta"))]
 
-    if fasta_files:
+    if fasta_keys:
         fasta_stats = []
-        for f in fasta_files:
-            fname = os.path.basename(f)
-            # Filter for main assembly files to avoid cluttering with proteins (.faa)
-            if any(x in fname.lower() for x in ["polished", "assembly", "flye", "unicycler", "polypolish"]):
-                try:
-                    with open(f, 'r') as file:
-                        # Simple Fasta Parsing
-                        content = file.read()
+        with st.spinner("Calculating assembly metrics from S3..."):
+            for key in fasta_keys:
+                fname = os.path.basename(key)
+                
+                # 1. Filter for main assembly files (moved inside the loop)
+                if any(x in fname.lower() for x in ["polished", "assembly", "flye", "unicycler", "polypolish"]):
+                    try:
+                        # 2. Fetch from S3 (Replaced local 'open' with your S3 helper)
+                        content = get_s3_file_content(key)
+                        
                         sections = content.split('>')
                         lengths = []
-                        total_seq = ""
+                        total_seq_list = [] # Using a list for better memory management
+                        
                         for s in sections[1:]:
                             lines = s.split('\n')
                             seq = "".join(lines[1:]).replace('\n','').replace('\r','')
                             lengths.append(len(seq))
-                            total_seq += seq
+                            total_seq_list.append(seq)
                         
-                        # GC %
-                        gc_count = total_seq.count('G') + total_seq.count('C')
-                        gc_pct = (gc_count / len(total_seq) * 100) if total_seq else 0
+                        full_txt = "".join(total_seq_list)
                         
-                        # N50
-                        lengths.sort(reverse=True)
-                        total_sum = sum(lengths)
-                        run_sum, n50 = 0, 0
-                        for l in lengths:
-                            run_sum += l
-                            if run_sum >= total_sum / 2:
-                                n50 = l
-                                break
-                        
-                        fasta_stats.append({
-                            "Assembly File": fname,
-                            "N50": f"{n50:,}",
-                            "GC %": round(gc_pct, 2),
-                            "Total Length": f"{total_sum:,}",
-                            "Contigs": len(lengths)
-                        })
-                except Exception: continue
+                        # 3. GC % Calculation
+                        if full_txt:
+                            gc_count = full_txt.count('G') + full_txt.count('C') + \
+                                       full_txt.count('g') + full_txt.count('c')
+                            gc_pct = (gc_count / len(full_txt) * 100)
+                            
+                            # 4. N50 Calculation
+                            lengths.sort(reverse=True)
+                            total_sum = sum(lengths)
+                            run_sum, n50 = 0, 0
+                            for l in lengths:
+                                run_sum += l
+                                if run_sum >= total_sum / 2:
+                                    n50 = l
+                                    break
+                            
+                            fasta_stats.append({
+                                "Assembly File": fname,
+                                "N50": f"{n50:,}",
+                                "GC %": round(gc_pct, 2),
+                                "Total Length": f"{total_sum:,}",
+                                "Contigs": len(lengths)
+                            })
+                    except Exception as e:
+                        st.error(f"Error parsing {fname}: {e}")
+                        continue
         
+        if fasta_stats:
+            st.dataframe(pd.DataFrame(fasta_stats), use_container_width=True)
         if fasta_stats:
             st.dataframe(pd.DataFrame(fasta_stats), width='stretch')
     else:
@@ -93,7 +117,7 @@ def render_reporter():
     # --- SECTION 3: CLINICAL AMR REPORT ---
     st.divider()
     st.subheader("💊 3. Clinical AMR Findings")
-    amr_files = glob.glob(os.path.join(res_dir, "amrfinderplus", "*.tsv"))
+    amr_files = [k for k in list_s3_files(f"{res_prefix}amrfinderplus/") if k.endswith(".tsv")]
     
     if amr_files:
         all_amr = []
