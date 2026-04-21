@@ -17,27 +17,33 @@ def render_runner():
         return
 
     input_tsv = st.session_state['validated_file']
-    bucket_name = "amr-flow-system-data-485988342847-us-east-1-an"
+    bucket_name = os.getenv("AMR_S3_BUCKET")
+    
+    if not bucket_name:
+        st.error("🚨 Configuration Missing: `AMR_S3_BUCKET` is not set.")
+        return
     st.markdown("### AWS Batch Configuration")
+    s3_path = f"s3://{bucket_name}"
+    s3_work = f"{s3_path}/work"
+    s3_out = f"{s3_path}/results"
     col1, col2 = st.columns(2)
     with col1:
         # This is where Nextflow keeps its intermediate cloud 'trash'
-        s3_work = os.getenv("AMR_WORK_BUCKET", "s3://default-bucket/work")
+        
         st.text_input("S3 Work Directory", s3_work, disabled=True)
     with col2:
-        s3_out = f"s3://{bucket_name}/results"
+
         st.text_input("S3 Results Directory", s3_out, disabled=True)
-    s3_path = "s3://amr-flow-system-data-485988342847-us-east-1-an"
     if st.button("🔥 Launch AWS Batch Pipeline"):
         # The command now uses -profile aws to trigger the cloud cluster
-        nextflow_bin = os.path.expanduser("~/bin/nextflow")
+        nextflow_bin = "nextflow" 
         main_nf_path = os.path.abspath("nextflow/main.nf")
         cmd = [
             nextflow_bin, "run", main_nf_path,
             "-profile", "aws", # Triggers the Cloud Profile
-            "-bucket-dir", f"{s3_path}/work", # Defines the S3 Working Directory
+            "-bucket-dir", s3_work,
             "--input", input_tsv,
-            "--outdir", f"{s3_path}/results",
+            "--outdir", s3_out,
             "-resume"
         ]
 

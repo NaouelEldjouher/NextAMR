@@ -6,23 +6,26 @@ import glob
 import json
 import io
 # Initialize S3 Client
+BUCKET_NAME = os.getenv("AMR_S3_BUCKET")
 s3 = boto3.client('s3')
 def render_reporter():
     st.header("📊 AMR-Flow Analysis Dashboard")
-    bucket_name = "amr-flow-system-data-485988342847-us-east-1-an"
+    if not BUCKET_NAME:
+        st.error("🚨 **Configuration Missing:** `AMR_S3_BUCKET` is not set.")
+        st.info("Please set your bucket name in the .env file to view results.")
+        return
     res_prefix = "results/"
-
     def list_s3_files(prefix):
         """Helper to list objects in S3 with a specific prefix"""
         try:
-            response = s3.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+            response = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=prefix)
             return [obj['Key'] for obj in response.get('Contents', [])]
         except Exception:
             return []
 
     def get_s3_file_content(key):
         """Helper to read S3 object content into string"""
-        obj = s3.get_object(Bucket=bucket_name, Key=key)
+        obj = s3.get_object(Bucket=BUCKET_NAME, Key=key)
         return obj['Body'].read().decode('utf-8')
 
     # --- SECTION 1: RAW READ QUALITY (FASTP) ---

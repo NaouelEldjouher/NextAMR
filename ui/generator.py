@@ -19,9 +19,12 @@ def render_generator():
     st.write("Upload your Sample Sheet and FastQ files. We will securely transfer them to your AWS S3 bucket for cloud processing.")
 
    
-    target_bucket = os.getenv("AMR_S3_BUCKET", "amr-flow-system-data-485988342847-us-east-1-an")
+    target_bucket = os.getenv("AMR_S3_BUCKET")
     target_folder = os.getenv("AMR_S3_FOLDER", "uploads")
-
+    # Guard Clause: If the bucket isn't configured, don't let the user proceed.
+    if not target_bucket:
+        st.error("🚨 **Configuration Missing:** S3 Bucket not found. Please set `AMR_S3_BUCKET` in your environment or .env file.")
+        st.info("Check the README for instructions on setting up your AWS environment.")
     # The File Uploaders
     tsv_file = st.file_uploader("1. Upload Sample Sheet (.tsv)", type=["tsv", "txt"])
     fastq_files = st.file_uploader("2. Upload all FastQ files", type=['fastq', 'fastq.gz', 'fq', 'fq.gz'], accept_multiple_files=True)
