@@ -19,7 +19,7 @@ process BAKTA {
     bakta \\
         --prefix $prefix \\
         --threads $task.cpus \\
-        --db /db \\
+        --db $db_path \\
         --output . \\
         --force \\
         --meta \\

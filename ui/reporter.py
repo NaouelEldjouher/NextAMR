@@ -4,6 +4,7 @@ import boto3
 import os
 import glob
 import json
+import io
 # Initialize S3 Client
 s3 = boto3.client('s3')
 def render_reporter():
@@ -110,33 +111,36 @@ def render_reporter():
         if fasta_stats:
             st.dataframe(pd.DataFrame(fasta_stats), use_container_width=True)
         if fasta_stats:
-            st.dataframe(pd.DataFrame(fasta_stats), width='stretch')
+            st.dataframe(pd.DataFrame(fasta_stats), use_container_width=True)
     else:
         st.warning("No assembly files (.fasta/.fna) detected yet.")
 
     # --- SECTION 3: CLINICAL AMR REPORT ---
     st.divider()
     st.subheader("💊 3. Clinical AMR Findings")
-    amr_files = [k for k in list_s3_files(f"{res_prefix}amrfinderplus/") if k.endswith(".tsv")]
-    
-    if amr_files:
+    amr_keys = [k for k in list_s3_files(f"{res_prefix}amrfinderplus/") if k.endswith(".tsv")]
+    if amr_keys:
         all_amr = []
-        for f in amr_files:
-            sample = os.path.basename(f).replace("_amr.tsv", "").replace(".tsv", "")
+        for key in amr_keys:
+            sample = os.path.basename(key).replace("_amr.tsv", "").replace(".tsv", "")
             try:
-                # Skip header-only files (usually ~294 bytes)
-                if os.path.getsize(f) > 350: 
-                    df = pd.read_csv(f, sep='\t')
-                    if not df.empty:
-                        df.insert(0, "Sample", sample)
-                        df["Status"] = "🧬 RESISTANT"
-                        all_amr.append(df)
+                content = get_s3_file_content(key)
+                df = pd.read_csv(io.StringIO(content), sep='\t')
+                if not df.empty:
+                    df.insert(0, "Sample", sample)
+                    df.insert(1, "Status", "🧬 RESISTANT")
+                    all_amr.append(df)
                 else:
                     all_amr.append(pd.DataFrame({
-                        "Sample": [sample], "Status": ["🟢 CLEAN"], 
-                        "Gene symbol": ["-"], "Class": ["No genes detected"]
+                        "Sample": [sample], 
+                        "Status": ["🟢 CLEAN"], 
+                        "Gene symbol": ["-"], 
+                        "Class": ["No resistance genes detected"]
                     }))
-            except Exception: continue
+            except Exception as e:
+                st.error(f"Error reading AMR results for {sample}: {e}")
+                continue       
+              
         
         if all_amr:
             master_amr = pd.concat(all_amr, ignore_index=True, sort=False)
@@ -148,11 +152,14 @@ def render_reporter():
             avail = [c for c in cols.keys() if c in master_amr.columns]
             final_df = master_amr[avail].rename(columns=cols)
 
-            # Styling logic for Modern Pandas (.map instead of .applymap)
-            def color_status(val):
-                return 'color: red; font-weight: bold' if val == "🧬 RESISTANT" else 'color: green'
-
-            st.dataframe(final_df.style.map(color_status, subset=['Status']), width='stretch')
+           
+            try:
+                def color_status(val):
+                    return 'color: red; font-weight: bold' if val == "Resistant" else 'color: green'
+                st.dataframe(final_df.style.map(color_status, subset=['Status']), use_container_width=True)
+            except Exception:
+            
+                st.dataframe(final_df, use_container_width=True)
             
             # Download and Search
             st.download_button("📥 Download Full Report", master_amr.to_csv(index=False), "AMR_Report.csv")
