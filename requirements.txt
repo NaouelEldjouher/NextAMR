@@ -1,5 +1,6 @@
-streamlit
-pandas
-boto3
-python-dotenv
-jinja2
+streamlit==1.28.0
+pandas==2.1.1
+boto3==1.28.62
+python-dotenv==1.0.0
+jinja2==3.1.2
+biopython==1.81
