@@ -16,6 +16,7 @@ process BAKTA {
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
+  
     bakta \\
         --prefix $prefix \\
         --threads $task.cpus \\

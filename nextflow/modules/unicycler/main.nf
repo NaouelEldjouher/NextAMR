@@ -26,7 +26,7 @@ process UNICYCLER {
         rm -rf unicycler_output
 
         unicycler \\
-            -1 ${shortreads[0]} \\E
+            -1 ${shortreads[0]} \\
             -2 ${shortreads[1]} \\
             $long_reads_arg \\
             -o unicycler_output \\
