@@ -1,0 +1,17 @@
+[server]
+# Increase the maximum upload size from the 200MB default to 3GB
+maxUploadSize = 3000
+
+# Enable CORS and Xsrf protection for secure cloud communication
+enableCORS = false
+enableXsrfProtection = false
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+primaryColor = "#00d4ff"
+backgroundColor = "#0b0e14"
+secondaryBackgroundColor = "#1c212b"
+textColor = "#FFFFFF"
+font = "sans serif"
