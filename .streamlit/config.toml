@@ -1,6 +1,6 @@
 [server]
-# Increase the maximum upload size from the 200MB default to 3GB
-maxUploadSize = 3000
+# Increase the maximum upload size from the 200MB default to 5GB
+maxUploadSize = 5000
 
 # Enable CORS and Xsrf protection for secure cloud communication
 enableCORS = false
