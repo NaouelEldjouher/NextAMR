@@ -1,12 +1,11 @@
 process AMRFINDERPLUS {
     tag "$meta.id"
-   
 
-    // 1. Add PublishDir to save the AMR resistance reports
     publishDir "${params.outdir}/amrfinderplus", mode: 'copy'
 
     input:
     tuple val(meta), path(fasta)
+    path amr_path
 
     output:
     tuple val(meta), path("*.tsv"), emit: report
@@ -14,12 +13,15 @@ process AMRFINDERPLUS {
 
     script:
     def prefix = "${meta.id}"
+    def organism_flag = meta.organism ? "-O \"${meta.organism}\"" : ""
     """
     
     amrfinder \\
         -n $fasta \\
+        -d $amr_path \\
         --threads $task.cpus \\
         --plus \\
+        $organism_flag \\
         -o ${prefix}_amr.tsv
 
     cat <<-END_VERSIONS > versions.yml
