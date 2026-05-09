@@ -4,8 +4,7 @@ nextflow.enable.dsl=2
 // --- 1. MODULE IMPORTS ---
 include { FASTP as FASTP_HYB }         from './modules/fastp/main'
 include { FASTP as FASTP_ILL }         from './modules/fastp/main'
-include { SUBSAMPLE as SUB_HYB }       from './modules/subsample'
-include { SUBSAMPLE as SUB_ILL }       from './modules/subsample'
+
 
 
 include { FILTLONG as FILT_HYB }       from './modules/filtlong/main'
@@ -60,14 +59,14 @@ workflow {
     FASTP_HYB ( ch_data.hybrid.map { meta, reads, lr -> [ meta, reads ] } )
     ch_filtlong_hyb_in = FASTP_HYB.out.reads.join( ch_data.hybrid.map { meta, reads, lr -> [ meta, lr ] } )
     FILT_HYB ( ch_filtlong_hyb_in )
-    SUB_HYB ( FASTP_HYB.out.reads ) 
-    ch_unicycler_hyb_input = SUB_HYB.out.reads.join(FILT_HYB.out.reads)
+   
+    ch_unicycler_hyb_input = FASTP_HYB.out.reads.join(FILT_HYB.out.reads)
     UNICYCLER_HYB ( ch_unicycler_hyb_input )
 
     // --- 5. LANE B: ILLUMINA WORKFLOW ---
     FASTP_ILL ( ch_data.illumina.map { meta, reads, lr -> [ meta, reads ] } )
-    SUB_ILL ( FASTP_ILL.out.reads )
-    ch_unicycler_ill_input = SUB_ILL.out.reads.map { meta, reads -> [ meta, reads, [] ] }
+  
+    ch_unicycler_ill_input = FASTP_ILL.out.reads.map { meta, reads -> [ meta, reads, [] ] }
     UNICYCLER_ILL ( ch_unicycler_ill_input )
     DNAAPLER_ILL ( UNICYCLER_ILL.out.scaf )
 
@@ -102,6 +101,6 @@ workflow {
         .mix( DNAAPLER_ILL.out.assembly )
         .mix( DNAAPLER_LR.out.assembly )
 
-    BAKTA ( ch_final_assemblies, file(params.bakta_db) )
-    AMRFINDERPLUS ( ch_final_assemblies )
+    BAKTA ( ch_final_assemblies,params.bakta_db )
+    AMRFINDERPLUS ( ch_final_assemblies,params.amr_db)
 }
