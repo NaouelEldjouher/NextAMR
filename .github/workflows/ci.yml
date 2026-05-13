@@ -25,9 +25,14 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          # 1. Move to a temporary folder to avoid naming conflicts
+          cd /tmp
           wget -qO- https://get.nextflow.io | bash
           chmod +x nextflow
           sudo mv nextflow /usr/local/bin/
+          
+          # 2. Return to the project workspace to install Python libraries
+          cd $GITHUB_WORKSPACE
           pip install streamlit boto3 pandas
 
       # Run Nextflow from the 'nextflow' directory
