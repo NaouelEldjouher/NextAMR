@@ -2,8 +2,7 @@ process AMRFINDERPLUS {
     tag "$meta.id"
 
     publishDir "${params.outdir}/amrfinderplus", mode: 'copy'
-    when:
-    !params.skip_amr
+
     input:
     tuple val(meta), path(fasta)
     path amr_path
@@ -11,7 +10,8 @@ process AMRFINDERPLUS {
     output:
     tuple val(meta), path("*.tsv"), emit: report
     path "versions.yml"           , emit: versions
-
+    when:
+    !params.skip_amr
     script:
     def prefix = "${meta.id}"
     def organism_flag = meta.organism ? "-O \"${meta.organism}\"" : ""

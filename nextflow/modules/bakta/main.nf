@@ -1,8 +1,7 @@
 process BAKTA {
     tag "$meta.id"
 
-    when:
-    !params.skip_bakta
+  
     input:
     tuple val(meta), path(assembly)
     path db_path
@@ -13,7 +12,8 @@ process BAKTA {
     tuple val(meta), path("*.tsv")  , emit: tsv
     tuple val(meta), path("*.faa")  , emit: faa
     path "versions.yml"             , emit: versions
-
+    when:
+    !params.skip_bakta
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
