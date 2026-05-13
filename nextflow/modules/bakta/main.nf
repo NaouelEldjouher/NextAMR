@@ -1,7 +1,8 @@
 process BAKTA {
     tag "$meta.id"
 
-
+    when:
+    !params.skip_bakta
     input:
     tuple val(meta), path(assembly)
     path db_path

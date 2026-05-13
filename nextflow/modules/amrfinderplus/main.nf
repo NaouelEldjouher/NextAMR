@@ -2,7 +2,8 @@ process AMRFINDERPLUS {
     tag "$meta.id"
 
     publishDir "${params.outdir}/amrfinderplus", mode: 'copy'
-
+    when:
+    !params.skip_amr
     input:
     tuple val(meta), path(fasta)
     path amr_path
