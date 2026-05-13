@@ -1,2 +1,2 @@
 sample	type	fastq_1	fastq_2	longreads
-Test	hybrid	home\naoue\AMR-Flow\tests\data\test_R1.fastq.gz	home\naoue\AMR-Flow\tests\data\test_R2.fastq.gz	home\naoue\AMR-Flow\tests\data\test_long.fastq.gz
+Test	hybrid	tests\data\test_R1.fastq.gz	tests\data\test_R2.fastq.gz	tests\data\test_long.fastq.gz
