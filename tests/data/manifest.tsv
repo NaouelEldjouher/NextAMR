@@ -1,2 +1,2 @@
-sample	type	fastq_1	fastq_2	longreads
-Test	hybrid	tests\data\test_R1.fastq.gz	tests\data\test_R2.fastq.gz	tests\data\test_long.fastq.gz
+sample	fastq_1	fastq_2	long_fastq
+Test	tests/data/test_R1.fastq.gz	tests/data/test_R2.fastq.gz	tests/data/test_long.fastq.gz
