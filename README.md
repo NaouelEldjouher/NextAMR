@@ -1,4 +1,4 @@
-# 🧬 AMR-Flow: Cloud-Native Genomic Assembler & AMR Detector
+# 🧬 NextAMR: Cloud-Native Genomic Assembler & AMR Detector
 A high-performance hybrid pipeline for Short, Long, and Hybrid read assembly on AWS Batch.
 
   [![Nextflow](https://img.shields.io/badge/Nextflow-%E2%89%A523.04.0-brightgreen.svg)](https://www.nextflow.io/)
@@ -6,7 +6,7 @@ A high-performance hybrid pipeline for Short, Long, and Hybrid read assembly on 
   [![Streamlit](https://img.shields.io/badge/UI-Streamlit-red.svg)](https://streamlit.io/)
 
 
-AMR-Flow is a high-performance bioinformatics pipeline optimized for **AWS Batch**. It automates the transition from raw sequencing reads to fully annotated genomes and comprehensive Antimicrobial Resistance (AMR) profiles.
+NextAMR is a high-performance bioinformatics pipeline optimized for **AWS Batch**. It automates the transition from raw sequencing reads to fully annotated genomes and comprehensive Antimicrobial Resistance (AMR) profiles.
 
 By utilizing a **High-Storage EC2 Spot Architecture**, the pipeline provides a dedicated 200GB "scratch space" to handle heavy genomic databases, overcoming the storage limitations of standard serverless platforms.
 
@@ -84,7 +84,7 @@ To use the Wave container service, users must generate an access token. This all
 
 2.Log in and navigate to Your Settings > Tokens.
 
-3. Click Add Token, name it (e.g., AMR-Flow-Token), and copy the string.
+3. Click Add Token, name it (e.g., NextAMR Token), and copy the string.
 Add it to your .env file:
 #### Step 3: Authentication (.env)
 Create a .env file in the project root. This is the "brain" that connects your code to your AWS account.
@@ -129,7 +129,7 @@ terraform apply -auto-approve
 ```
 ### Full Project Directory
 ```bash
-AMR-Flow/
+NextAMR/
 ├── .env                # EXCLUDED FROM GIT: Contains AWS Keys & ARNs
 ├── nextflow/
 │   ├── modules/          # Atomic, reusable tool wrappers
