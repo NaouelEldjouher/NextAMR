@@ -28,7 +28,7 @@ def list_s3_files(bucket, prefix=""):
         return []
   
 def render_reporter():
-    st.header("📊 AMR-Flow Analysis Dashboard") 
+    st.header("📊 NextAMR Analysis Dashboard") 
     col_title, col_btn = st.columns([3, 1])
     with col_btn:
 

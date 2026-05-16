@@ -36,7 +36,7 @@ with st.sidebar:
         - Event-driven workflow ready
         """)
 
-st.title("🧬 AMR-Flow")
+st.title("🧬 NextAMR Analysis Dashboard")
 
 
 
