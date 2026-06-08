@@ -1,12 +1,14 @@
 # 🧬 NextAMR: Cloud-Native Genomic Assembler & AMR Detector
-A high-performance hybrid pipeline for Short, Long, and Hybrid read assembly on AWS Batch.
+A cloud-native pipeline for Short, Long, and Hybrid read assembly on AWS Batch.
 
 ![Nextflow](https://img.shields.io/badge/Nextflow-23.04+-brightgreen) ![AWS](https://img.shields.io/badge/AWS-Batch-orange) ![Streamlit](https://img.shields.io/badge/UI-Streamlit-red)
 
-NextAMR is a high-performance bioinformatics pipeline optimized for AWS Batch. It automates the transition from raw sequencing reads to fully annotated genomes and comprehensive Antimicrobial Resistance (AMR) profiles.
+NextAMR is a bioinformatics pipeline optimized for AWS Batch. It automates the transition from raw sequencing reads to fully annotated genomes and comprehensive Antimicrobial Resistance (AMR) profiles.
 
 By utilizing a High-Storage EC2 Architecture, the pipeline provides a dedicated 200GB "scratch space" to handle heavy genomic databases, overcoming the storage limitations of standard serverless platforms.
 
+## 📺 Demo
+[![Watch the demo](https://img.youtube.com/vi/QFy639KoqRU/maxresdefault.jpg)](https://www.youtube.com/watch?v=QFy639KoqRU)
 ---
 
 ## 🌟 Key Features
