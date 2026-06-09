@@ -8,7 +8,13 @@ NextAMR is a bioinformatics pipeline optimized for AWS Batch. It automates the t
 By utilizing a High-Storage EC2 Architecture, the pipeline provides a dedicated 200GB "scratch space" to handle heavy genomic databases, overcoming the storage limitations of standard serverless platforms.
 
 ## 📺 Demo
-[![Watch the demo](https://img.youtube.com/vi/QFy639KoqRU/maxresdefault.jpg)](https://www.youtube.com/watch?v=QFy639KoqRU)
+
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=QFy639KoqRU">
+    <img src="https://img.youtube.com/vi/QFy639KoqRU/maxresdefault.jpg" alt="NextAMR Demo Video" style="width:100%;">
+  </a>
+  <p><i>Click the image above to watch the full pipeline demo on YouTube.</i></p>
+</div>
 ---
 
 ## 🌟 Key Features
