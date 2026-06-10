@@ -11,9 +11,9 @@ By utilizing a High-Storage EC2 Architecture, the pipeline provides a dedicated 
 
 <div align="center">
   <a href="https://www.youtube.com/watch?v=QFy639KoqRU">
-    <img src="https://img.youtube.com/vi/QFy639KoqRU/maxresdefault.jpg" alt="NextAMR Demo Video" style="width:100%;">
+    <img src="NextAMR/demo-preview.gif" alt="NextAMR Pipeline Running" style="width:80%;">
   </a>
-  <p><i>Click the image above to watch the full pipeline demo on YouTube.</i></p>
+  <p><i>Click the animation above to watch the full pipeline demo on YouTube.</i></p>
 </div>
 ---
 
